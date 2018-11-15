@@ -1,28 +1,31 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, { Suspense, lazy, useState } from 'react';
+import LazySwapi from './Components/Poke'
 import './App.css';
+import ErrorBoundary from './Components/Error'
+// const LazySwapi = lazy(() => import("./Components/Poke"))
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+function App() {
+  const [values, setValue] = useState(
+    {
+      input: '',
+      search: 'pika'
+    }
+  )
+
+  return (
+    <div className="App">
+      <input 
+        type='text' 
+        placeholder='Search for your favorite Star Wars Character' 
+        value={values.input} 
+        onChange={e => setValue({...values, input: e.target.value})} 
+      />
+      <button onClick={() => setValue({search: values.input, input: '' })}>Click to Search SWAPI</button>
+      <ErrorBoundary>
+          <LazySwapi search={values.search}/>
+      </ErrorBoundary>
+    </div>
+  );
 }
 
 export default App;

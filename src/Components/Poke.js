@@ -1,37 +1,48 @@
 import React, {useState, useEffect, lazy, Suspense} from 'react'
 import axios from 'axios';
 import PokeCard from './PokeCard'
+import ErrorBoundary from './Error'
 // const PokeCard = lazy(() => import('./PokeCard'));
 
-export default function Poke({ search }) {
-    const [pokemonList, setPokemon] = useState([])
+export default class Poke extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            pokemon: []
+        }
+        console.log('Hit...')
+    }
 
-    useEffect(() => {
-        axios.get(`https://api.pokemontcg.io/v1/cards?name=${search}`).then(pokemon => {
-            console.log(pokemon)
-            if(pokemon.data.length) {
-                setPokemon(pokemon.data.cards)
-            } else {
-                setPokemon([])
-            }
-        })
-    }, search)
-
-    const displayPokemon = pokemonList.map(creature => {
+    componentDidUpdate(prevProps) {
+        if(prevProps.search !== this.props.search) {
+            axios.get(`https://api.pokemontcg.io/v1/cards?name=${this.props.search}`).then(response => {
+                console.log(response)
+                if(response.data.cards.length) {
+                    this.setState({ pokemon: response.data.cards })
+                } 
+            })
+        }
+    }
+    
+    render() {
+    // throw new Error('Trash coder')
+    const displayPokemon = this.state.pokemon.map(creature => {
         return (
-            // <Suspense 
-            //     fallback={
-            //         <div style={ {width: '170px', height: '265px'} }>
-            //             LOADING...
-            //         </div>
-            //     }
-            // >
-                <PokeCard
-                    id={creature.id}
-                    picture={creature.imageUrlHiRes}
-                    series={creature.series}
-                />
-            // </Suspense>
+            <ErrorBoundary>
+                {/* <Suspense 
+                    fallback={
+                        <div style={ {width: '170px', height: '265px'} }>
+                            LOADING...
+                        </div>
+                    }
+                > */}
+                    <PokeCard
+                        id={creature.id}
+                        picture={creature.imageUrlHiRes}
+                        series={creature.series}
+                    />
+                {/* </Suspense> */}
+            </ErrorBoundary>
         )
     })
 
@@ -45,4 +56,5 @@ export default function Poke({ search }) {
         //         No Pokemon Match Your Input!
         //     </div>
     )
+    }
 }

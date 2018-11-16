@@ -1,10 +1,26 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 
-export default function PokeCard({ id, picture, series }) {
-    return(
+
+const PokeCard = ({ id, picture, series }) => {
+    const createImage = (url) => {
+        return new Promise((resolve, reject) => {
+            const image = new Image()
+            image.src = url
+            image.onload = resolve
+            image.onerror = reject
+        })
+    }
+
+    const card = createImage(picture)
+    console.log(card)
+    return (
         <figure key={id}>
-            <img src={picture} alt="" width='170'/>
+            <Suspense fallback={<div>LOADINGGGGGGG</div>}>
+                <img src={picture} alt="" width='170'/>
+            </Suspense>
             <div>SERIES: {series}</div>
         </figure>
     )
 }
+
+export default PokeCard

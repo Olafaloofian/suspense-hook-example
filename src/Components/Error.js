@@ -2,19 +2,18 @@ import React from 'react'
 
 class ErrorBoundary extends React.Component {
     state = {
-        hasError: false
-    }
-
-    static getDerivedStateFromError(error) {
-        return { hasError: true }
+        hasError: false,
+        error: null,
+        errorInfo: null
     }
 
     componentDidCatch(error, info) {
         console.error('ErrorBoundary', error, info)
+        this.setState({error: error, errorInfo: info})
     }
 
     render() {
-        if (this.state.hasError) {
+        if (this.state.errorInfo) {
             return (
                 <>
                     <h1>An error occurred.</h1>
